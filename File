@@ -1,0 +1,83 @@
+import random
+import math
+# This is a template program created for me to study and get back into coding. 
+# This program was created by AI, with slight alterations by me.
+# To add questions & answers, simply add a new key-value pair to this dictionary.
+# This version of the program has been loaded with geometric formulas and extra code to make checking answers work properly.
+# Make sure to declare which variables the user should use in the prompt.
+FORMULAS = {
+    "Volume of a cube (use 's' for side length)": "s**3",
+    "Surface area of a cube (use 's' for side length)": "6*s**2",
+    "Volume of a sphere (use 'r' for radius)": "(4/3) * pi*r**3",
+    "Surface area of a sphere (use 'r' for radius)": "4 * pi*r**2",
+    "Volume of a cylinder (use 'r' for radius, 'h' for height)": "pi*r**2*h",
+    "Surface area of a cylinder (use 'r' for radius, 'h' for height)": "2*pi*r*h+2*pi*r**2",
+    "Volume of a cone (use 'r' for radius, 'h' for height)": "(1/3)*pi*r**2*h",
+    "Volume of a rectangular prism (use 'l' for length, 'w' for width, 'h' for height)": "l*w*h"
+}
+
+def evaluate_equivalence(user_input, correct_formula):
+    """
+    Tests if the user's formula is mathematically equivalent to the correct one
+    by plugging in random numbers and comparing the results.
+    """
+    # Switches to the correct arithmetic notation for python
+    user_input = user_input.replace('^', '**')
+    correct_formula = correct_formula.replace('^', '**')
+
+    # Generate random values to test equivalence
+    test_vars = {
+        's': random.uniform(2, 10),
+        'r': random.uniform(2, 10),
+        'h': random.uniform(2, 10),
+        'l': random.uniform(2, 10),
+        'w': random.uniform(2, 10),
+        'pi': math.pi
+    }
+
+    try:
+        # Evaluates both expressions using the random variables
+        user_val = eval(user_input, {"__builtins__": None}, test_vars)
+        correct_val = eval(correct_formula, {"__builtins__": None}, test_vars)
+
+        # Use math.isclose to handle potential rounding errors
+        return math.isclose(user_val, correct_val, rel_tol=1e-5)
+    except Exception:
+        # If eval fails, return false
+        return False
+
+def main():
+    print("Instructions:")
+    print("- Type operations using basic keyboard characters (+, -, *, /).")
+    print("- Use '^' or '**' for exponents (e.g., r^2 or r**2).")
+    print("- Type 'pi' for π.")
+    print("- Always include multiplication signs (e.g., 4*pi*r^2, NOT 4pir^2).")
+    print("- Type 'quit' at any time to exit.\n")
+
+    # Pull the questions and shuffle them for a random order
+    questions = list(FORMULAS.keys())
+    random.shuffle(questions)
+
+    score = 0
+    for prompt in questions:
+        print(f"Question: {prompt}")
+        user_answer = input("Your formula: ").strip()
+
+        if user_answer.lower() in ['quit', 'exit']:
+            print("\nExiting quiz...")
+            break
+
+        correct_formula = FORMULAS[prompt]
+
+        if evaluate_equivalence(user_answer, correct_formula):
+            print("Correct!\n")
+            score += 1
+        else:
+            # Provide a clean standard version of the answer if they get it wrong
+            display_answer = correct_formula.replace('**', '^')
+            print(f"Incorrect. A correct format would be: {display_answer}\n")
+
+    print(f"Quiz complete! You scored {score} out of {len(questions)}.")
+
+if __name__ == "__main__":
+    main()
